@@ -1,0 +1,44 @@
+# ============================================================
+# AutoParts Intelligence Platform - Dependencies
+# Python 3.10+
+# ============================================================
+
+# --- Core Data ---
+pandas==2.2.1
+numpy==1.26.4
+pyarrow==15.0.2           # Fast parquet I/O for large datasets
+
+# --- Database ---
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.29
+
+# --- Machine Learning ---
+scikit-learn==1.4.2
+xgboost==2.0.3
+lightgbm==4.3.0
+
+# --- Time Series Forecasting ---
+statsmodels==0.14.1
+prophet==1.1.5
+
+# --- Visualization ---
+matplotlib==3.8.4
+seaborn==0.13.2
+plotly==5.21.0
+
+# --- Utilities ---
+python-dotenv==1.0.1
+loguru==0.7.2              # Production-grade logging
+pydantic==2.7.0            # Data validation
+tqdm==4.66.2               # Progress bars
+joblib==1.4.0              # Parallel processing & model persistence
+holidays==0.46             # Holiday calendars for forecasting
+
+# --- Testing ---
+pytest==8.1.1
+pytest-cov==5.0.0
+
+# --- Code Quality ---
+black==24.4.2
+ruff==0.4.2
+mypy==1.10.0

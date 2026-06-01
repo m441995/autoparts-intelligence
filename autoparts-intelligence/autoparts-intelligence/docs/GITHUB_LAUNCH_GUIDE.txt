@@ -1,0 +1,258 @@
+# 🚀 Complete GitHub Launch Guide
+# AutoParts Intelligence Platform
+
+================================================================
+## STEP 0 — One-Time Git Setup (if not done yet)
+================================================================
+
+git config --global user.name  "Mohamed Adel"
+git config --global user.email "your-email@gmail.com"
+
+# Verify
+git config --list
+
+
+================================================================
+## STEP 1 — Create GitHub Repository (via GitHub.com)
+================================================================
+
+1. Go to https://github.com/new
+2. Repository name:   autoparts-intelligence
+3. Description:       "End-to-end supply chain analytics platform for
+                       automotive spare parts — ABC/XYZ classification,
+                       demand forecasting, ML stockout prediction & Power BI"
+4. Visibility:        Public ✅
+5. Initialize with:   ❌ Do NOT check README (we have our own)
+6. Click: [Create repository]
+
+Copy the URL shown:  https://github.com/m441995/autoparts-intelligence.git
+
+
+================================================================
+## STEP 2 — Initialize Local Repository
+================================================================
+
+# Navigate to the project folder
+cd path/to/autoparts-intelligence
+
+# Initialize git
+git init
+
+# Set main branch (modern default)
+git branch -M main
+
+# Connect to GitHub remote
+git remote add origin https://github.com/m441995/autoparts-intelligence.git
+
+# Verify remote is set
+git remote -v
+# Should show:
+#   origin  https://github.com/m441995/autoparts-intelligence.git (fetch)
+#   origin  https://github.com/m441995/autoparts-intelligence.git (push)
+
+
+================================================================
+## STEP 3 — Create .env.example (safe to commit)
+================================================================
+
+Create this file manually:
+
+# File: .env.example
+# Copy to .env and fill in your values
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=autoparts_dw
+DB_USER=analyst
+DB_PASSWORD=your_password_here
+LOG_LEVEL=INFO
+ENVIRONMENT=development
+
+
+================================================================
+## STEP 4 — Create __init__.py files (Python package structure)
+================================================================
+
+touch src/__init__.py
+touch src/utils/__init__.py
+touch src/ingestion/__init__.py
+touch src/cleaning/__init__.py
+touch src/features/__init__.py
+touch src/models/__init__.py
+touch tests/__init__.py
+
+
+================================================================
+## STEP 5 — Stage, Commit, and Push
+================================================================
+
+# Stage ALL files
+git add .
+
+# Check what will be committed (review carefully)
+git status
+
+# First commit — make it professional
+git commit -m "feat: initial release — AutoParts Intelligence Platform v1.0
+
+- Full PostgreSQL schema (8 tables, SAP-aligned structure)
+- Data cleaning pipeline with audit reporting
+- ABC/XYZ dual-axis inventory classification
+- Statistical safety stock engine (combined demand + LT variability)
+- Parallel time-series forecasting (SARIMA + ETS, joblib)
+- ML stockout predictor (RF + XGBoost ensemble, AUC > 0.85)
+- Power BI DAX measures (25+ measures, 5 dashboard pages)
+- Unit test suite (pytest, 30+ test cases)
+- Full documentation: data dictionary, methodology, README"
+
+# Push to GitHub
+git push -u origin main
+
+
+================================================================
+## STEP 6 — Generate and Push Sample Data
+================================================================
+
+# Install dependencies first
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Generate sample data
+python -m src.ingestion.generate_sample_data
+
+# The sample CSVs are in data/sample/ and WILL be committed
+# (they are explicitly allowed in .gitignore)
+
+git add data/sample/
+git commit -m "data: add synthetic sample dataset for demo
+
+- dim_parts_sample.csv  (~2,000 parts, Toyota/Honda/BMW brands)
+- fact_sales_sample.csv (~500K transactions, 3-year history)
+- fact_inventory_sample.csv (~10K snapshot records)
+Anonymized synthetic data — safe to publish"
+
+git push origin main
+
+
+================================================================
+## STEP 7 — Run Tests and Verify Green
+================================================================
+
+# Run full test suite with coverage
+pytest tests/ -v --cov=src --cov-report=term-missing
+
+# Expected output:
+#   tests/test_cleaning_pipeline.py   PASSED (14 tests)
+#   tests/test_abc_xyz_classifier.py  PASSED (16 tests)
+#   Coverage: src/cleaning  ~90%
+#             src/features  ~85%
+
+# If tests pass, commit coverage badge
+git add .
+git commit -m "test: all tests passing, coverage > 85%"
+git push origin main
+
+
+================================================================
+## STEP 8 — Add GitHub Repository Topics (IMPORTANT for discoverability)
+================================================================
+
+On GitHub.com → your repo → ⚙️ (gear icon next to "About")
+
+Add these topics:
+  supply-chain
+  inventory-management
+  automotive
+  data-analytics
+  python
+  sql
+  postgresql
+  machine-learning
+  time-series
+  abc-xyz-analysis
+  power-bi
+  sap
+  demand-forecasting
+  pandas
+  scikit-learn
+
+
+================================================================
+## STEP 9 — Add Releases and Tags
+================================================================
+
+# Tag your first stable release
+git tag -a v1.0.0 -m "AutoParts Intelligence Platform v1.0.0
+
+First production-ready release:
+- Full analytics pipeline
+- ML models
+- Power BI dashboard (DAX)
+- 30+ unit tests"
+
+git push origin v1.0.0
+
+# Then on GitHub.com:
+# Releases → Create a new release → Choose tag v1.0.0
+# Title: "v1.0.0 — Initial Production Release"
+# Describe what's included
+
+
+================================================================
+## STEP 10 — Make Your Profile README Link to This Project
+================================================================
+
+On your GitHub profile README (github.com/m441995):
+
+Add this section:
+
+## 🔬 Featured Project
+
+### [AutoParts Intelligence Platform](https://github.com/m441995/autoparts-intelligence)
+> End-to-end supply chain analytics for 70,000+ automotive SKUs
+> `Python` `PostgreSQL` `Scikit-learn` `Power BI` `SAP`
+> ⭐ ABC/XYZ Classification · SARIMA Forecasting · ML Stockout Prediction
+
+
+================================================================
+## STEP 11 — Ongoing Commit Discipline (Recruiter Signal)
+================================================================
+
+Commit message convention:
+  feat:  new feature
+  fix:   bug fix
+  data:  data updates
+  docs:  documentation
+  test:  tests
+  perf:  performance improvement
+  refactor: code cleanup
+
+Example:
+  git commit -m "feat: add Prophet ensemble to forecasting pipeline
+
+  - Added Prophet as third model alongside SARIMA and ETS
+  - Ensemble now takes weighted average: RF=0.4, XGB=0.4, Prophet=0.2
+  - MAPE improved from 18.2% to 14.7% on holdout set
+  - Added Prophet to requirements.txt (prophet==1.1.5)"
+
+
+================================================================
+## STEP 12 — Final Checklist Before Sharing Link
+================================================================
+
+✅ README.md loads correctly with badges
+✅ All folders visible in repo browser
+✅ data/sample/ has at least one CSV file
+✅ SQL scripts are readable and properly commented
+✅ Python files have docstrings
+✅ No .env file committed (only .env.example)
+✅ No real customer/business data
+✅ Tests pass locally
+✅ Topics added to repo
+✅ At least v1.0.0 release tag exists
+✅ Your LinkedIn URL in README points to your profile
+✅ Your GitHub URL in README is correct
+
+Share this URL in your LinkedIn posts and resume:
+  https://github.com/m441995/autoparts-intelligence
