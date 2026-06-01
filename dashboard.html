@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoParts Intelligence Platform — Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f2ec;color:#0f0e0c}
+.topbar{background:#0f0e0c;color:#f5f2ec;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.topbar-title{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.topbar-sub{font-size:12px;color:rgba(245,242,236,.55);margin-top:2px}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav-btn{font-size:12px;padding:6px 16px;border:1px solid rgba(255,255,255,.2);border-radius:4px;background:transparent;color:rgba(245,242,236,.7);cursor:pointer;transition:all .15s}
+.nav-btn:hover{background:rgba(255,255,255,.08);color:#f5f2ec}
+.nav-btn.active{background:#c0392b;border-color:#c0392b;color:#fff}
+.section{display:none;padding:24px 32px;animation:fi .2s ease}
+.section.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e8e4dc;border-radius:8px;padding:16px 18px}
+.kpi-label{font-size:11px;color:#6b6560;margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase}
+.kpi-val{font-size:24px;font-weight:600;color:#0f0e0c;line-height:1}
+.kpi-trend{font-size:11px;margin-top:5px}
+.up{color:#3B6D11}.down{color:#A32D2D}.warn{color:#854F0B}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.charts-row.single{grid-template-columns:1fr}
+.card{background:#fff;border:1px solid #e8e4dc;border-radius:10px;padding:18px 20px}
+.card-title{font-size:13px;font-weight:600;color:#0f0e0c;margin-bottom:3px}
+.card-sub{font-size:11px;color:#6b6560;margin-bottom:14px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:11px;color:#6b6560}
+.legend span{display:flex;align-items:center;gap:5px}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:11px;font-weight:600;color:#6b6560;text-align:left;padding:9px 12px;border-bottom:1px solid #e8e4dc;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #f0ede7;color:#0f0e0c}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf8f4}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:.03em}
+.b-ok{background:#EAF3DE;color:#3B6D11}
+.b-warn{background:#FAEEDA;color:#854F0B}
+.b-crit{background:#FAECE7;color:#993C1D}
+.b-ax{background:#EAF3DE;color:#3B6D11}
+.b-ay{background:#FAEEDA;color:#854F0B}
+.b-az{background:#FAECE7;color:#993C1D}
+.b-bx{background:#E6F1FB;color:#185FA5}
+.b-cz{background:#f1efe8;color:#5f5e5a}
+.pbar{height:5px;background:#f1efe8;border-radius:3px;overflow:hidden;margin-top:3px}
+.pfill{height:100%;border-radius:3px}
+@media(max-width:700px){.charts-row{grid-template-columns:1fr}.topbar{padding:14px 16px}.section{padding:16px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title">AutoParts Intelligence Platform</div>
+    <div class="topbar-sub">Toyota Authorized Dealer Network · 5 Branches · 2,000 SKUs · Dec 2024</div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="show(this,'exec')">Executive overview</button>
+    <button class="nav-btn" onclick="show(this,'inv')">Inventory health</button>
+    <button class="nav-btn" onclick="show(this,'dem')">Demand analysis</button>
+    <button class="nav-btn" onclick="show(this,'sup')">Supplier performance</button>
+    <button class="nav-btn" onclick="show(this,'rep')">Replenishment</button>
+  </div>
+</div>
+
+<!-- EXECUTIVE OVERVIEW -->
+<div id="exec" class="section active">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Total Revenue YTD</div><div class="kpi-val">$2.4M</div><div class="kpi-trend up">▲ +12.3% vs prior year</div></div>
+    <div class="kpi"><div class="kpi-label">Fill Rate</div><div class="kpi-val">96.8%</div><div class="kpi-trend up">✓ Target: 95%</div></div>
+    <div class="kpi"><div class="kpi-label">Inventory Turnover</div><div class="kpi-val">8.4x</div><div class="kpi-trend up">▲ +0.6 vs last year</div></div>
+    <div class="kpi"><div class="kpi-label">Backorder Rate</div><div class="kpi-val">3.2%</div><div class="kpi-trend warn">⚠ Target: &lt;3%</div></div>
+    <div class="kpi"><div class="kpi-label">Dead Stock %</div><div class="kpi-val">4.1%</div><div class="kpi-trend up">✓ Target: &lt;5%</div></div>
+    <div class="kpi"><div class="kpi-label">Active SKUs</div><div class="kpi-val">1,904</div><div class="kpi-trend up">96% of catalog</div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">Monthly revenue trend — 2024</div>
+      <div class="card-sub">All branches combined · Revenue vs COGS</div>
+      <div class="legend"><span><span class="ld" style="background:#378ADD"></span>Revenue ($K)</span><span><span class="ld" style="background:#639922;border:1px dashed #3B6D11"></span>COGS ($K)</span></div>
+      <div style="position:relative;height:220px"><canvas id="c1" role="img" aria-label="Monthly revenue 2024 growing from $161K in Jan to $232K in Dec">Revenue growing steadily through 2024.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Revenue by category</div>
+      <div class="card-sub">YTD contribution — all branches</div>
+      <div class="legend"><span><span class="ld" style="background:#378ADD"></span>Brakes 28%</span><span><span class="ld" style="background:#1D9E75"></span>Engine 24%</span><span><span class="ld" style="background:#EF9F27"></span>Suspension 18%</span><span><span class="ld" style="background:#D85A30"></span>Electrical 15%</span><span><span class="ld" style="background:#888780"></span>Other 15%</span></div>
+      <div style="position:relative;height:220px"><canvas id="c2" role="img" aria-label="Revenue by category: Brakes 28%, Engine 24%, Suspension 18%, Electrical 15%, Other 15%">Brakes leads revenue at 28%.</canvas></div>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">Fill rate by branch — last 90 days</div>
+      <div class="card-sub">Fulfilled lines vs backorder</div>
+      <div class="legend"><span><span class="ld" style="background:#639922"></span>Fulfilled %</span><span><span class="ld" style="background:#E24B4A"></span>Backorder %</span></div>
+      <div style="position:relative;height:200px"><canvas id="c3" role="img" aria-label="Fill rate by branch: Cairo Main 97.8%, Nasr City 96.4%, Alexandria 97.1%, Giza 95.9%, Mansoura 96.8%">All branches above 95% fill rate.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Revenue by customer type</div>
+      <div class="card-sub">Workshop · Fleet · Retail · Internal</div>
+      <div class="legend"><span><span class="ld" style="background:#534AB7"></span>Workshop 50%</span><span><span class="ld" style="background:#378ADD"></span>Fleet 25%</span><span><span class="ld" style="background:#1D9E75"></span>Retail 20%</span><span><span class="ld" style="background:#888780"></span>Internal 5%</span></div>
+      <div style="position:relative;height:200px"><canvas id="c4" role="img" aria-label="Customer mix: Workshop 50%, Fleet 25%, Retail 20%, Internal 5%">Workshop is the largest customer segment at 50%.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY HEALTH -->
+<div id="inv" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Total Inventory Value</div><div class="kpi-val">$286K</div><div class="kpi-trend warn">⚠ +4% vs target</div></div>
+    <div class="kpi"><div class="kpi-label">Dead Stock Value</div><div class="kpi-val">$11.7K</div><div class="kpi-trend warn">4.1% of total</div></div>
+    <div class="kpi"><div class="kpi-label">Slow-Moving Value</div><div class="kpi-val">$28.4K</div><div class="kpi-trend warn">9.9% of total</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Days on Hand</div><div class="kpi-val">43.5d</div><div class="kpi-trend up">▼ Down from 47</div></div>
+    <div class="kpi"><div class="kpi-label">Parts Below ROP</div><div class="kpi-val">47</div><div class="kpi-trend down">▼ Order now</div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">ABC/XYZ classification — SKU count</div>
+      <div class="card-sub">9 strategic segments · 1,904 active parts</div>
+      <div style="position:relative;height:230px"><canvas id="c5" role="img" aria-label="ABC/XYZ matrix: AX 180, AY 95, AZ 48, BX 285, BY 190, BZ 122, CX 380, CY 310, CZ 294">CX segment has most SKUs at 380, AX at 180.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Stock aging analysis</div>
+      <div class="card-sub">Inventory value by movement recency</div>
+      <div class="legend"><span><span class="ld" style="background:#639922"></span>Active &lt;30d</span><span><span class="ld" style="background:#EF9F27"></span>Watch 30-90d</span><span><span class="ld" style="background:#E24B4A"></span>Slow &gt;90d</span><span><span class="ld" style="background:#A32D2D"></span>Dead &gt;365d</span></div>
+      <div style="position:relative;height:230px"><canvas id="c6" role="img" aria-label="Stock aging: 71% active, 15% watch, 10% slow, 4% dead">71% of stock value is actively moving.</canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Dead stock disposal priority list</div>
+    <div class="card-sub">Parts with zero movement &gt;365 days · Ranked by capital at risk</div>
+    <table>
+      <thead><tr><th>Part number</th><th>Description</th><th>Category</th><th>Qty</th><th>Value at risk</th><th>Days idle</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:monospace;font-size:11px">HON-44127-0082</td><td>Radiator — Honda Civic 1.8L</td><td>Cooling</td><td>3</td><td>$1,240</td><td>428</td><td><span class="badge b-crit">Dead stock</span></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">NIS-48500-1PA1A</td><td>Shock absorber front — Nissan</td><td>Suspension</td><td>2</td><td>$980</td><td>412</td><td><span class="badge b-crit">Dead stock</span></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">TOY-08826-00080</td><td>Windshield washer fluid 2L</td><td>Body</td><td>48</td><td>$173</td><td>398</td><td><span class="badge b-crit">Dead stock</span></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">BMW-11427953129</td><td>Oil filter — BMW 3 Series</td><td>Engine</td><td>12</td><td>$144</td><td>387</td><td><span class="badge b-crit">Dead stock</span></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">HYU-58101-2HA30</td><td>Brake pad set — Hyundai i30</td><td>Brakes</td><td>4</td><td>$520</td><td>201</td><td><span class="badge b-warn">Slow moving</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DEMAND ANALYSIS -->
+<div id="dem" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Units Sold YTD</div><div class="kpi-val">84,320</div><div class="kpi-trend up">▲ +9.8% vs 2023</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Forecast MAPE</div><div class="kpi-val">13.2%</div><div class="kpi-trend up">✓ Target: &lt;15%</div></div>
+    <div class="kpi"><div class="kpi-label">A-Class Parts</div><div class="kpi-val">323 SKUs</div><div class="kpi-trend up">80% of revenue</div></div>
+    <div class="kpi"><div class="kpi-label">Top Category</div><div class="kpi-val">Brakes</div><div class="kpi-trend up">28% of revenue</div></div>
+  </div>
+  <div class="charts-row single">
+    <div class="card">
+      <div class="card-title">Monthly demand by category — 2024</div>
+      <div class="card-sub">Units sold per month · Top 4 categories · Seasonal patterns visible</div>
+      <div class="legend"><span><span class="ld" style="background:#D85A30"></span>Brakes</span><span><span class="ld" style="background:#378ADD"></span>Engine</span><span><span class="ld" style="background:#1D9E75"></span>Suspension</span><span><span class="ld" style="background:#EF9F27"></span>Electrical</span></div>
+      <div style="position:relative;height:250px"><canvas id="c7" role="img" aria-label="Monthly demand by category 2024, summer peak in all categories, brakes consistently highest">Clear summer demand peak across all categories.</canvas></div>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">ABC Pareto — SKU vs revenue</div>
+      <div class="card-sub">17% of SKUs generate 80% of revenue</div>
+      <div class="legend"><span><span class="ld" style="background:#D85A30"></span>SKU share %</span><span><span class="ld" style="background:#993C1D"></span>Revenue share %</span></div>
+      <div style="position:relative;height:200px"><canvas id="c8" role="img" aria-label="ABC Pareto: A=17% SKUs 80% revenue, B=28% SKUs 15% revenue, C=55% SKUs 5% revenue">Classic Pareto pattern confirmed in data.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">XYZ demand volatility</div>
+      <div class="card-sub">Coefficient of Variation distribution</div>
+      <div class="legend"><span><span class="ld" style="background:#639922"></span>X stable CoV&lt;0.5</span><span><span class="ld" style="background:#EF9F27"></span>Y variable</span><span><span class="ld" style="background:#E24B4A"></span>Z erratic</span></div>
+      <div style="position:relative;height:200px"><canvas id="c9" role="img" aria-label="XYZ volatility: X stable 38%, Y variable 31%, Z erratic 31%">38% stable, 62% have variable or erratic demand.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPLIER PERFORMANCE -->
+<div id="sup" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Avg OTD Rate</div><div class="kpi-val">87.4%</div><div class="kpi-trend warn">⚠ Target: 90%</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Lead Time</div><div class="kpi-val">23.1d</div><div class="kpi-trend warn">+2d vs contract</div></div>
+    <div class="kpi"><div class="kpi-label">LT Std Deviation</div><div class="kpi-val">6.8d</div><div class="kpi-trend warn">High variance</div></div>
+    <div class="kpi"><div class="kpi-label">Total PO Value</div><div class="kpi-val">$148K</div><div class="kpi-trend up">YTD spend</div></div>
+    <div class="kpi"><div class="kpi-label">Active Suppliers</div><div class="kpi-val">8</div><div class="kpi-trend up">3 preferred</div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">On-time delivery rate by supplier</div>
+      <div class="card-sub">Closed POs · Last 12 months</div>
+      <div style="position:relative;height:240px"><canvas id="c10" role="img" aria-label="OTD rates: Bosch 96%, NGK 94%, Castrol 93%, Denso 88%, Gates 82%, Toyota 79%, Al-Yousuf 71%">Bosch leads OTD at 96%, Al-Yousuf lowest at 71%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Lead time variability scatter</div>
+      <div class="card-sub">Avg lead time vs std deviation · Bubble = PO value</div>
+      <div class="legend"><span><span class="ld" style="background:#378ADD"></span>OEM</span><span><span class="ld" style="background:#1D9E75"></span>OES</span><span><span class="ld" style="background:#EF9F27"></span>Aftermarket</span></div>
+      <div style="position:relative;height:240px"><canvas id="c11" role="img" aria-label="Lead time scatter: OEM suppliers have longer and more variable lead times than local OES">Local OES suppliers more consistent than OEM importers.</canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Supplier scorecard</div>
+    <div class="card-sub">All active suppliers · Ranked by OTD performance</div>
+    <table>
+      <thead><tr><th>Supplier</th><th>Type</th><th>Country</th><th>OTD %</th><th>Avg LT</th><th>LT std dev</th><th>Rating</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Bosch Auto Parts GmbH</td><td>OEM</td><td>Germany</td><td>96%</td><td>37d</td><td>3.2d</td><td>4.9 ★</td><td><span class="badge b-ok">Preferred</span></td></tr>
+        <tr><td>NGK Spark Plugs Egypt</td><td>OES</td><td>Egypt</td><td>94%</td><td>7d</td><td>1.4d</td><td>4.5 ★</td><td><span class="badge b-ok">Preferred</span></td></tr>
+        <tr><td>Castrol Lubricants Egypt</td><td>OES</td><td>Egypt</td><td>93%</td><td>5d</td><td>1.1d</td><td>4.7 ★</td><td><span class="badge b-ok">Preferred</span></td></tr>
+        <tr><td>Denso Arabia LLC</td><td>OEM</td><td>UAE</td><td>88%</td><td>16d</td><td>4.8d</td><td>4.6 ★</td><td><span class="badge b-ok">Active</span></td></tr>
+        <tr><td>Gates Belts MENA</td><td>OES</td><td>UAE</td><td>82%</td><td>23d</td><td>7.2d</td><td>4.2 ★</td><td><span class="badge b-warn">Monitor</span></td></tr>
+        <tr><td>Toyota Genuine Parts MENA</td><td>OEM</td><td>Japan</td><td>79%</td><td>47d</td><td>11.4d</td><td>4.8 ★</td><td><span class="badge b-warn">Monitor</span></td></tr>
+        <tr><td>Al-Yousuf Auto Parts</td><td>Aftermarket</td><td>Egypt</td><td>71%</td><td>4d</td><td>2.1d</td><td>3.8 ★</td><td><span class="badge b-crit">Review</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- REPLENISHMENT -->
+<div id="rep" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Parts Needing Reorder</div><div class="kpi-val">47</div><div class="kpi-trend down">▼ Below ROP now</div></div>
+    <div class="kpi"><div class="kpi-label">Replenishment Cost</div><div class="kpi-val">$38.4K</div><div class="kpi-trend warn">⚠ Urgent orders</div></div>
+    <div class="kpi"><div class="kpi-label">Stockout Risk 14d</div><div class="kpi-val">23 SKUs</div><div class="kpi-trend down">ML model score</div></div>
+    <div class="kpi"><div class="kpi-label">Urgency Score</div><div class="kpi-val">62/100</div><div class="kpi-trend warn">Action needed</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Safety Stock</div><div class="kpi-val">11.2d</div><div class="kpi-trend up">✓ Target: 7-14d</div></div>
+  </div>
+  <div class="charts-row single">
+    <div class="card">
+      <div class="card-title">Forecast vs actual — Oct–Dec 2024 holdout evaluation</div>
+      <div class="card-sub">SARIMA ensemble · Avg MAPE 13.2% · 80% confidence interval shown</div>
+      <div class="legend"><span><span class="ld" style="background:#378ADD"></span>Actual demand</span><span><span class="ld" style="background:#D85A30"></span>Forecast</span><span><span class="ld" style="background:#fde8e3;border:1px solid #D85A30"></span>80% CI band</span></div>
+      <div style="position:relative;height:250px"><canvas id="c12" role="img" aria-label="Forecast vs actual Oct-Dec 2024: forecast closely tracks actual with MAPE 13.2%">Forecast closely tracks actual with 13.2% MAPE.</canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Replenishment action list — urgent orders</div>
+    <div class="card-sub">Parts below reorder point · ML stockout probability · Ranked by risk</div>
+    <table>
+      <thead><tr><th>Part number</th><th>Description</th><th>Segment</th><th>Qty avail.</th><th>ROP</th><th>Days stock</th><th>Stockout risk (14d)</th><th>EOQ</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-family:monospace;font-size:11px">TOY-04465-02260</td><td>Front brake pad — Camry</td>
+          <td><span class="badge b-ax">AX</span></td><td>4</td><td>18</td><td>3.2d</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar" style="flex:1"><div class="pfill" style="width:91%;background:#E24B4A"></div></div><span style="font-size:11px;color:#A32D2D;font-weight:600">91%</span></div></td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:11px">TOY-SK16HR11</td><td>Spark plug iridium (each)</td>
+          <td><span class="badge b-ax">AX</span></td><td>12</td><td>35</td><td>4.8d</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar" style="flex:1"><div class="pfill" style="width:84%;background:#E24B4A"></div></div><span style="font-size:11px;color:#A32D2D;font-weight:600">84%</span></div></td>
+          <td>120</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:11px">TOY-90916-02096</td><td>Alternator belt 2.5L</td>
+          <td><span class="badge b-ay">AY</span></td><td>3</td><td>12</td><td>5.1d</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar" style="flex:1"><div class="pfill" style="width:78%;background:#EF9F27"></div></div><span style="font-size:11px;color:#854F0B;font-weight:600">78%</span></div></td>
+          <td>40</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:11px">TOY-04945-02080</td><td>Brake disc front — Corolla</td>
+          <td><span class="badge b-ax">AX</span></td><td>2</td><td>10</td><td>5.8d</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar" style="flex:1"><div class="pfill" style="width:74%;background:#EF9F27"></div></div><span style="font-size:11px;color:#854F0B;font-weight:600">74%</span></div></td>
+          <td>24</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:11px">TOY-90080-91203</td><td>Air filter Camry 2.5L</td>
+          <td><span class="badge b-bx">BX</span></td><td>8</td><td>22</td><td>7.2d</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="pbar" style="flex:1"><div class="pfill" style="width:58%;background:#EF9F27"></div></div><span style="font-size:11px;color:#854F0B;font-weight:600">58%</span></div></td>
+          <td>80</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const done={};
+
+function show(btn,id){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  setTimeout(draw,60);
+}
+
+function draw(){
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+
+  if(!done.exec&&document.getElementById('exec').classList.contains('active')){
+    done.exec=true;
+    new Chart(document.getElementById('c1'),{type:'bar',data:{labels:M,datasets:[
+      {label:'Revenue',data:[161,158,175,182,195,210,224,198,205,218,225,232],backgroundColor:'#378ADD',borderRadius:3,order:2},
+      {label:'COGS',data:[92,90,100,104,112,120,128,113,117,124,129,133],type:'line',borderColor:'#639922',borderDash:[5,3],borderWidth:2,pointRadius:0,fill:false,tension:.4,order:1}
+    ]},options:{...opts,scales:{y:{ticks:{callback:v=>'$'+v+'K'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c2'),{type:'doughnut',data:{labels:['Brakes','Engine','Suspension','Electrical','Other'],datasets:[{data:[28,24,18,15,15],backgroundColor:['#378ADD','#1D9E75','#EF9F27','#D85A30','#888780'],borderWidth:3,borderColor:'#fff'}]},options:{...opts,cutout:'62%'}});
+
+    new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['Cairo Main','Nasr City','Alexandria','Giza','Mansoura'],datasets:[
+      {label:'Fulfilled',data:[97.8,96.4,97.1,95.9,96.8],backgroundColor:'#639922',borderRadius:3},
+      {label:'Backorder',data:[2.2,3.6,2.9,4.1,3.2],backgroundColor:'#E24B4A',borderRadius:3}
+    ]},options:{...opts,indexAxis:'y',scales:{x:{stacked:true,max:100,ticks:{callback:v=>v+'%'}},y:{stacked:true,grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c4'),{type:'pie',data:{labels:['Workshop','Fleet','Retail','Internal'],datasets:[{data:[50,25,20,5],backgroundColor:['#534AB7','#378ADD','#1D9E75','#888780'],borderWidth:3,borderColor:'#fff'}]},options:{...opts}});
+  }
+
+  if(!done.inv&&document.getElementById('inv').classList.contains('active')){
+    done.inv=true;
+    new Chart(document.getElementById('c5'),{type:'bar',data:{
+      labels:['AX','AY','AZ','BX','BY','BZ','CX','CY','CZ'],
+      datasets:[{label:'SKUs',data:[180,95,48,285,190,122,380,310,294],
+        backgroundColor:['#3B6D11','#854F0B','#993C1D','#185FA5','#854F0B','#993C1D','#888780','#888780','#5F5E5A'],borderRadius:3}]
+    },options:{...opts,scales:{y:{grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c6'),{type:'doughnut',data:{labels:['Active <30d','Watch 30-90d','Slow >90d','Dead >365d'],datasets:[{data:[71,15,10,4],backgroundColor:['#639922','#EF9F27','#E24B4A','#A32D2D'],borderWidth:3,borderColor:'#fff'}]},options:{...opts,cutout:'60%'}});
+  }
+
+  if(!done.dem&&document.getElementById('dem').classList.contains('active')){
+    done.dem=true;
+    new Chart(document.getElementById('c7'),{type:'line',data:{labels:M,datasets:[
+      {label:'Brakes',data:[2800,2650,2900,3100,3400,3600,3750,3500,3200,3100,3300,3450],borderColor:'#D85A30',borderWidth:2.5,pointRadius:3,tension:.4,fill:false},
+      {label:'Engine',data:[2400,2300,2500,2650,2700,2800,2900,2750,2600,2550,2700,2850],borderColor:'#378ADD',borderWidth:2,borderDash:[5,3],pointRadius:3,tension:.4,fill:false},
+      {label:'Suspension',data:[1600,1550,1700,1800,1950,2100,2050,1900,1750,1700,1800,1850],borderColor:'#1D9E75',borderWidth:2,pointRadius:3,tension:.4,fill:false},
+      {label:'Electrical',data:[1200,1150,1300,1400,1500,1600,1650,1550,1450,1400,1500,1550],borderColor:'#EF9F27',borderWidth:2,borderDash:[3,3],pointRadius:3,tension:.4,fill:false}
+    ]},options:{...opts,scales:{y:{ticks:{callback:v=>v.toLocaleString()},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c8'),{type:'bar',data:{labels:['A class','B class','C class'],datasets:[
+      {label:'SKU share %',data:[17,28,55],backgroundColor:['#D85A30','#378ADD','#888780'],borderRadius:4},
+      {label:'Revenue share %',data:[80,15,5],backgroundColor:['#993C1D','#185FA5','#5F5E5A'],borderRadius:4}
+    ]},options:{...opts,scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c9'),{type:'doughnut',data:{labels:['X — stable (CoV<0.5)','Y — variable','Z — erratic (CoV>1.0)'],datasets:[{data:[38,31,31],backgroundColor:['#639922','#EF9F27','#E24B4A'],borderWidth:3,borderColor:'#fff'}]},options:{...opts,cutout:'58%'}});
+  }
+
+  if(!done.sup&&document.getElementById('sup').classList.contains('active')){
+    done.sup=true;
+    new Chart(document.getElementById('c10'),{type:'bar',data:{
+      labels:['Bosch','NGK Egypt','Castrol','Denso','Gates','Toyota Gen.','Al-Yousuf'],
+      datasets:[{label:'OTD %',data:[96,94,93,88,82,79,71],
+        backgroundColor:[96,94,93,88,82,79,71].map(v=>v>=90?'#639922':v>=80?'#EF9F27':'#E24B4A'),borderRadius:3}]
+    },options:{...opts,indexAxis:'y',scales:{x:{min:60,max:100,ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('c11'),{type:'bubble',data:{datasets:[
+      {label:'OEM',data:[{x:37,y:3.2,r:16},{x:47,y:11.4,r:20},{x:16,y:4.8,r:12}],backgroundColor:'rgba(55,138,221,0.55)',borderColor:'#185FA5',borderWidth:1.5},
+      {label:'OES',data:[{x:7,y:1.4,r:9},{x:5,y:1.1,r:7},{x:23,y:7.2,r:11}],backgroundColor:'rgba(29,158,117,0.55)',borderColor:'#0F6E56',borderWidth:1.5},
+      {label:'Aftermarket',data:[{x:4,y:2.1,r:6}],backgroundColor:'rgba(239,159,39,0.55)',borderColor:'#BA7517',borderWidth:1.5}
+    ]},options:{...opts,scales:{x:{title:{display:true,text:'Avg lead time (days)'},min:0,max:60},y:{title:{display:true,text:'Std deviation (days)'},min:0,max:15}}}});
+  }
+
+  if(!done.rep&&document.getElementById('rep').classList.contains('active')){
+    done.rep=true;
+    const wk=['Oct W1','Oct W2','Oct W3','Oct W4','Nov W1','Nov W2','Nov W3','Nov W4','Dec W1','Dec W2','Dec W3','Dec W4'];
+    const actual=[840,920,880,960,1020,980,1060,1100,1140,1080,1160,1200];
+    const fcast=[820,900,870,950,1010,970,1040,1080,1120,1060,1140,1180];
+    const upper=[900,985,960,1040,1110,1065,1140,1185,1225,1160,1248,1290];
+    const lower=[740,815,780,860,910,875,940,975,1015,960,1032,1070];
+    new Chart(document.getElementById('c12'),{type:'line',data:{labels:wk,datasets:[
+      {label:'CI Upper',data:upper,borderColor:'transparent',pointRadius:0,fill:'+1',backgroundColor:'rgba(192,57,43,0.08)',tension:.3},
+      {label:'CI Lower',data:lower,borderColor:'transparent',pointRadius:0,fill:false,tension:.3},
+      {label:'Actual',data:actual,borderColor:'#378ADD',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#378ADD',tension:.3,fill:false},
+      {label:'Forecast',data:fcast,borderColor:'#D85A30',borderWidth:2,borderDash:[5,4],pointRadius:3,tension:.3,fill:false}
+    ]},options:{...opts,scales:{y:{ticks:{callback:v=>v.toLocaleString()},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{maxRotation:45,autoSkip:false}}}}});
+  }
+}
+
+draw();
+</script>
+</body>
+</html>
